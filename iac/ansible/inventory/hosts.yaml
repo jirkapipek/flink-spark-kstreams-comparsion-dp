@@ -1,0 +1,23 @@
+kafka_servers:
+  hosts:
+    virtualserver1:
+      ansible_host: virtualserver1
+monitoring_tools:
+  hosts:
+    virtualserver1:
+      ansible_host: virtualserver1
+nodexporter:
+  hosts:
+    virtualserver2:
+      ansible_host: virtualserver2
+        
+all:
+  vars:
+    ansible_connection: ssh
+    ansible_user: vagrant
+    ansible_become: true
+    ansible_become_method: sudo
+    package_name: kafka
+    package_version: 3.7.0
+    package_zip: kafka_2.12-3.7.0      
+    ansible_python_interpreter: /usr/bin/python3    

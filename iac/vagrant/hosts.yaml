@@ -1,0 +1,4 @@
+virtual_server_1_ip: "192.168.56.24"
+virtual_server_1: "virtualserver1"
+virtual_server_2_ip: "192.168.56.25"
+virtual_server_2: "virtualserver2"

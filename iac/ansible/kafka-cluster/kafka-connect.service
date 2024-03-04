@@ -1,0 +1,15 @@
+[Unit]
+Description=Apache Kafka
+Requires=zookeeper.service
+After=zookeeper.service
+
+[Service]
+Type=simple
+
+User=kafka
+Group=kafka
+
+ExecStart=/opt/kafka/bin/connect-distributed.sh /opt/kafka/config/connect.properties
+
+[Install]
+WantedBy=multi-user.target

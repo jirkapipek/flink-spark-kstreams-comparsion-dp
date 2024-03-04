@@ -1,0 +1,15 @@
+- name: Install Observability stack (nodexporter)
+  hosts: nodexporter
+  tags:
+    - monitoring
+    - target
+  roles:
+    - ../roles/target
+
+- name: Install Observability stack (Prometheus Grafana)
+  hosts: monitoring_tools
+  tags:
+    - monitoring
+    - observer
+  roles:
+    - ../roles/observer

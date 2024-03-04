@@ -1,0 +1,122 @@
+---
+- name: Apache Kafka playbook install
+  hosts: kafka_servers
+
+  tasks:
+  - name: Create kafka user and data folders
+    shell: |
+      useradd kafka
+      mkdir -p /data/kafka
+      mkdir -p /data/zookeeper
+      mkdir -p /opt/connectors
+      echo {{inventory_hostname}} | tail -c 2 > /data/zookeeper/myid
+      chown -R kafka:kafka /data/kafka*
+      chown -R kafka:kafka /data/zookeeper*
+      chown -R kafka:kafka /opt/connectors*
+
+  - name: Copy binary to /opt
+    ansible.builtin.get_url:
+      url: https://downloads.apache.org/{{package_name}}/{{package_version}}/{{package_zip}}.tgz
+      dest: /opt
+      owner: kafka
+      group: kafka
+
+  - name: Extract binary
+    ansible.builtin.unarchive:
+      src: /opt/{{package_zip}}.tgz
+      dest: /opt
+      owner: kafka
+      group: kafka
+      remote_src: yes
+
+  - name: Create symbolic link to folder kafka
+    shell: |
+      ln -s /opt/{{package_zip}} /opt/kafka
+      chown -R kafka:kafka /opt/kafka*
+
+  - name: Create Zookeeper system service
+    ansible.builtin.template:
+      src: zookeeper.service
+      dest: /etc/systemd/system/zookeeper.service
+      owner: root
+      group: root
+
+  - name: Create Kafka system service
+    ansible.builtin.template:
+      src: kafka.service
+      dest: /etc/systemd/system/kafka.service
+      owner: root
+      group: root
+
+  - name: Create Connect system service
+    ansible.builtin.template:
+      src: kafka-connect.service
+      dest: /etc/systemd/system/kafka-connect.service
+      owner: root
+      group: root
+      
+  - name: Create Connect system service
+    ansible.builtin.template:
+      src: kafka-connect.service
+      dest: /etc/systemd/system/kafka-connect.service
+      owner: root
+      group: root
+
+  - name: Select Server config file by node name
+    ansible.builtin.template:
+      src: server-{{inventory_hostname}}.properties
+      dest: /opt/kafka/config/server.properties
+      owner: kafka
+      group: kafka
+
+  - name: Select Zookeeper config file by node name
+    ansible.builtin.template:
+      src: zookeeper.properties
+      dest: /opt/kafka/config/zookeeper.properties
+      owner: kafka
+      group: kafka
+
+  - name: Select Connect config file by node name
+    ansible.builtin.template:
+      src: connect.properties
+      dest: /opt/kafka/config/connect.properties
+      owner: kafka
+      group: kafka
+
+  - name: Copy Datagen connector
+    ansible.builtin.copy:
+      src: confluentinc-kafka-connect-datagen-0.6.4.zip
+      dest: /opt/connectors/confluentinc-kafka-connect-datagen-0.6.4.zip
+      owner: kafka
+      group: kafka
+
+  - name: Extract Datagen
+    ansible.builtin.unarchive:
+      src: /opt/connectors/confluentinc-kafka-connect-datagen-0.6.4.zip
+      dest: /opt/connectors
+      owner: kafka
+      group: kafka
+      remote_src: yes
+
+  - name: start services Zookeeper and Kafka
+    shell: |
+      systemctl daemon-reload
+      systemctl start zookeeper
+      systemctl start kafka
+      systemctl start kafka-connect
+      systemctl restart zookeeper
+      systemctl restart kafka
+      systemctl restart kafka-connect
+      systemctl enable zookeeper.service
+      systemctl enable kafka.service
+      systemctl enable kafka-connect
+
+  - name: create topics for data streams
+    shell: |
+      cd /opt/kafka
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_FILTERED --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_TRANSFORMED --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_ENRICHED --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEE_LOCATION --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEE_LOCATION_AGGREGATED --partitions 1 --replication-factor 1

@@ -1,0 +1,100 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+DISK_UUID = Time.now.utc.to_i
+
+config_file = ENV['VAGRANT_HOST_CONFIG'] || "hosts.yaml"
+
+if File.exists?(config_file)
+  configs = YAML.load_file(config_file)
+
+  bastion_host = configs['bastion_host']
+
+  virtual_server_1 = configs['virtual_server_1']
+  virtual_server_2 = configs['virtual_server_2']
+
+  virtual_server_1_ip = configs['virtual_server_1_ip']
+  virtual_server_2_ip = configs['virtual_server_2_ip']
+else
+  abort("Error: Configuration file #{config_file} does not exist!")
+end
+
+scriptRhel = <<SCRIPT
+systemctl stop firewalld; systemctl disable firewalld
+sudo yum install java-17-openjdk-devel -y
+sudo yum install zip -y
+SCRIPT
+
+script = <<SCRIPT
+echo "#{virtual_server_1_ip} #{virtual_server_1}" >> /etc/hosts
+echo "#{virtual_server_2_ip} #{virtual_server_2}" >> /etc/hosts
+SCRIPT
+
+Vagrant.configure("2") do |config|
+
+servers = [
+  {
+    :hostname => virtual_server_1,
+    :box => "generic/alma8",  # Use Alma8 box for your servers
+    :ram => 16384,             # Set RAM to 16GB
+    :cpu => 2,
+    :ip => virtual_server_1_ip,
+  },
+  {
+    :hostname => virtual_server_2,
+    :box => "generic/alma8",
+    :ram => 16384,
+    :cpu => 2,
+    :ip => virtual_server_2_ip,
+  },
+]
+  if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = false
+  end
+
+  config.vm.provision "shell" do |s|
+    ssh_prv_key = ""
+    ssh_pub_key = ""
+    if File.file?("#{Dir.home}/.ssh/id_rsa")
+      ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
+    else
+      puts "No SSH key found. You will need to remedy this before pushing to the repository."
+    end
+    s.inline = <<-SHELL
+      echo "Modifying SSH config to enable password authentication..."
+      sudo sed -i '/^PasswordAuthentication/s/no/yes/' /etc/ssh/sshd_config
+      sudo systemctl restart sshd
+      if grep -sq "#{ssh_pub_key}" /home/vagrant/.ssh/authorized_keys; then
+        echo "SSH keys already provisioned."
+        exit 0;
+      fi
+      echo "SSH key provisioning."
+      mkdir -p /home/vagrant/.ssh/
+      touch /home/vagrant/.ssh/authorized_keys
+      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+      chown -R vagrant:vagrant /home/vagrant
+      exit 0
+    SHELL
+  end
+
+  servers.each do |machine|
+    config.vm.define machine[:hostname] do |node|
+        node.vm.box = machine[:box]
+        node.vm.hostname = machine[:hostname]
+        node.vm.network "private_network", ip: machine[:ip]
+        node.vm.provider "virtualbox" do |domain|
+          domain.memory = machine[:ram]
+          domain.cpus = machine[:cpu]
+          domain.name = machine[:hostname]
+        end
+
+        node.vm.provision "shell", inline: script
+
+        node.vm.provision "shell", inline: scriptRhel
+
+    end
+  end  
+end
+
