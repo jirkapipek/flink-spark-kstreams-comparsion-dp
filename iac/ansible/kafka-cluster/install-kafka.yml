@@ -114,6 +114,11 @@
   - name: create topics for data streams
     shell: |
       cd /opt/kafka
+        until ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --list; do
+        echo "Waiting for Kafka to become available..."
+      sleep 5
+      done
+      echo 'Creating kafka topics'
       ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES --partitions 1 --replication-factor 1
       ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_FILTERED --partitions 1 --replication-factor 1
       ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_TRANSFORMED --partitions 1 --replication-factor 1

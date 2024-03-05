@@ -1,0 +1,39 @@
+- hosts: spark_cluster
+  vars:
+    spark_version: "3.5.1"
+    spark_url: "https://archive.apache.org/dist/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz"
+  tasks:
+    - name: Download Apache Spark # Stažení Apache Spark
+      get_url:
+        url: "{{ spark_url }}"
+        dest: "/tmp/spark-{{ spark_version }}-bin-hadoop3.tgz"
+        timeout: 100
+      
+    - name: Unpack Apache Spark # Rozbalení Apache Spark
+      unarchive:
+        src: "/tmp/spark-{{ spark_version }}-bin-hadoop3.tgz"
+        dest: "/opt"
+        remote_src: yes
+
+    - name: Copy custom spark-env.sh # Kopírování vlastního spark-env.sh
+      copy:
+        src: "spark-env.sh"
+        dest: "/opt/spark-{{ spark_version }}-bin-hadoop3/conf/spark-env.sh"
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+
+    - name: Start Spark master and worker # Spuštění Spark master a worker
+      shell: "/opt/spark-{{ spark_version }}-bin-hadoop3/sbin/start-all.sh"
+      async: 10
+      poll: 0
+
+    - name: Verify Spark is running # Ověření, že Spark je spuštěn
+      uri:
+        url: "http://localhost:8080"
+        method: GET
+      register: result
+      until: result.status == 200
+      retries: 5
+      delay: 10

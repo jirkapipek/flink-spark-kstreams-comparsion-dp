@@ -10,7 +10,14 @@ nodexporter:
   hosts:
     virtualserver2:
       ansible_host: virtualserver2
-        
+flink_cluster:
+  hosts:
+    virtualserver2:
+      ansible_host: virtualserver2      
+spark_cluster:   
+  hosts:
+    virtualserver2:
+      ansible_host: virtualserver2     
 all:
   vars:
     ansible_connection: ssh
@@ -21,3 +28,6 @@ all:
     package_version: 3.7.0
     package_zip: kafka_2.12-3.7.0      
     ansible_python_interpreter: /usr/bin/python3    
+    flink_version: "1.18.1"
+    flink_url: "https://dlcdn.apache.org/flink/flink-1.18.1/flink-1.18.1-bin-scala_2.12.tgz"    
+    flink_task_memory: 8g

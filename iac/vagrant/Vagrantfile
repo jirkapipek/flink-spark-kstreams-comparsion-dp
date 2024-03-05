@@ -23,7 +23,7 @@ end
 
 scriptRhel = <<SCRIPT
 systemctl stop firewalld; systemctl disable firewalld
-sudo yum install java-17-openjdk-devel -y
+sudo yum install java-11-openjdk-devel -y
 sudo yum install zip -y
 SCRIPT
 
@@ -91,7 +91,6 @@ servers = [
         end
 
         node.vm.provision "shell", inline: script
-
         node.vm.provision "shell", inline: scriptRhel
 
     end

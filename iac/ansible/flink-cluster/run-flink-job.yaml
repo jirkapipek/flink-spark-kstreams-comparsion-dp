@@ -1,0 +1,40 @@
+- hosts: flink_cluster
+  tasks:
+    - name: Start the Job Manager
+      # Spuštění Job Managera
+      shell: "/opt/flink-{{ flink_version }}/bin/jobmanager.sh start"
+      async: 10
+      poll: 0
+    - name: Start the Task Manager
+      # Spuštění Job Managera
+      shell: "/opt/flink-{{ flink_version }}/bin/taskmanager.sh start -D taskmanager.memory.process.size={{flink_task_memory}}"
+      async: 10
+      poll: 0
+
+    - name: Verify Flink is running
+      # Ověření, že Flink je spuštěn
+      uri:
+        url: "http://localhost:8081"
+        method: GET
+      register: result
+      until: result.status == 200
+      retries: 5
+      delay: 10
+
+    - name: Copy Flink job to the server
+      # Kopírování Flink jobu na server
+      copy:
+        src: "flink-job.jar"
+        dest: "/opt/flink-{{ flink_version }}/flink-job.jar"
+      notify: Deploy Flink job
+
+  handlers:
+    - name: Deploy Flink job
+      # Nasazení Flink jobu
+      shell: "/opt/flink-{{ flink_version }}/bin/flink run -d /opt/flink-{{ flink_version }}/flink-job.jar"
+      async: 10
+      poll: 0
+      register: deploy_result
+      until: deploy_result.rc == 0
+      retries: 5
+      delay: 10

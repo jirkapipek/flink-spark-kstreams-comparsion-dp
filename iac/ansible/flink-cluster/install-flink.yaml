@@ -1,0 +1,36 @@
+- hosts: flink_cluster
+  tasks:
+    - name: Download Apache Flink # Stažení Apache Flink
+      get_url:
+        url: "{{ flink_url }}"
+        dest: "/tmp/flink-{{ flink_version }}-bin-scala_2.12.tgz"
+        timeout: 100
+      
+    - name: Unpack Apache Flink # Rozbalení Apache Flink
+      unarchive:
+        src: "/tmp/flink-{{ flink_version }}-bin-scala_2.12.tgz"
+        dest: "/opt"
+        remote_src: yes
+
+    - name: Copy custom flink-conf.yaml # Kopírování vlastního flink-conf.yaml
+      copy:
+        src: "flink-conf.yaml"
+        dest: "/opt/flink-{{ flink_version }}/conf/flink-conf.yaml"
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+
+    - name: Start the Job Manager # Spuštění Job Managera
+      shell: "/opt/flink-{{ flink_version }}/bin/start-cluster.sh"
+      async: 10
+      poll: 0
+
+    - name: Verify Flink is running # Ověření, že Flink je spuštěn
+      uri:
+        url: "http://localhost:8081"
+        method: GET
+      register: result
+      until: result.status == 200
+      retries: 5
+      delay: 10
