@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="confluentinc-kafka-connect-datagen-0.6.4">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/iac/ansible/kafka-cluster/confluentinc-kafka-connect-datagen-0.6.4.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
