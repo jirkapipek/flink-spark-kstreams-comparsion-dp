@@ -84,10 +84,10 @@ public class TransformationEmployeesSalaryTest {
     // Transform Employee data to include monthly salary
     DataStream<Tuple2<String, EmployeeWithSalary>> transformedDataStream = employeeDataStream.map(employeeTuple -> {
       EmployeeWithSalary transformedEmployee = new EmployeeWithSalary();
-      double monthlySalary = employeeTuple.f1.hourly_rate * WORK_HOURS_PER_MONTH;
-      transformedEmployee.employeeId = employeeTuple.f1.employee_id;
-      transformedEmployee.firstName = employeeTuple.f1.first_name;
-      transformedEmployee.lastName = employeeTuple.f1.last_name;
+      double monthlySalary = employeeTuple.f1.hourlyRate * WORK_HOURS_PER_MONTH;
+      transformedEmployee.employeeId = employeeTuple.f1.employeeId;
+      transformedEmployee.firstName = employeeTuple.f1.firstName;
+      transformedEmployee.lastName = employeeTuple.f1.lastName;
       transformedEmployee.age = employeeTuple.f1.age;
       transformedEmployee.ssn = employeeTuple.f1.ssn;
       transformedEmployee.email = employeeTuple.f1.email;

@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.uhk.configuration.ConfigurationManager;
 import cz.uhk.model.json.Employee;
-import cz.uhk.model.json.EmployeeLocation;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -24,7 +22,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -92,7 +89,7 @@ public class FilterEmployeesTest {
 
         // Filter the data stream to include only female employees with an hourly rate greater than 15
         DataStream<Tuple2<String, Employee>> filterDataStream = employeeDataStream.filter(employeeTuple ->
-                "female".equals(employeeTuple.f1.gender) && employeeTuple.f1.hourly_rate > 15);
+                "female".equals(employeeTuple.f1.gender) && employeeTuple.f1.hourlyRate > 15);
 
         // Define a serialization schema for sending the filtered data to the output Kafka topic
         KafkaRecordSerializationSchema<Tuple2<String, Employee>> serializationSchema = new KafkaRecordSerializationSchema<>() {
