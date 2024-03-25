@@ -14,13 +14,4 @@
       # Spuštění Job Managera
       shell: "/opt/flink-{{ flink_version }}/bin/stop-cluster.sh"
       async: 10
-      poll: 0           
-
-      ./bin/spark-submit \
-      --packages "org.yaml:snakeyaml:1.28" \
-  --class cz.uhk.spark.aggregation.CountEmployeesInLabTest \
-  --master spark://virtualserver2:7077 \
-  --deploy-mode cluster \
-    --driver-cores 1 \
-      --driver-memory 2g \
-  spark-tests-1.0-SNAPSHOT.jar 
+      poll: 0          
