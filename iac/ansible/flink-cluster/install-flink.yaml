@@ -20,13 +20,19 @@
         group: root
         mode: '0644'
       become: yes
-
-    - name: Start the Job Manager # Spuštění Job Managera
-      shell: "/opt/flink-{{ flink_version }}/bin/start-cluster.sh"
+    - name: Start the Job Manager
+      # Spuštění Job Managera
+      shell: "/opt/flink-{{ flink_version }}/bin/jobmanager.sh start"
+      async: 10
+      poll: 0
+    - name: Start the Task Manager
+      # Spuštění Job Managera
+      shell: "/opt/flink-{{ flink_version }}/bin/taskmanager.sh start -D taskmanager.memory.process.size={{flink_task_memory}}"
       async: 10
       poll: 0
 
-    - name: Verify Flink is running # Ověření, že Flink je spuštěn
+    - name: Verify Flink is running
+      # Ověření, že Flink je spuštěn
       uri:
         url: "http://localhost:8081"
         method: GET

@@ -119,9 +119,9 @@
       sleep 5
       done
       echo 'Creating kafka topics'
-      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES --partitions 1 --replication-factor 1
-      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_FILTERED --partitions 1 --replication-factor 1
-      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_TRANSFORMED --partitions 1 --replication-factor 1
-      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_ENRICHED --partitions 1 --replication-factor 1
-      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEE_LOCATION --partitions 1 --replication-factor 1
-      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEE_LOCATION_AGGREGATED --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES --config message.timestamp.type=LogAppendTime --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_FILTERED --config message.timestamp.type=LogAppendTime  --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_TRANSFORMED --config message.timestamp.type=LogAppendTime  --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEES_ENRICHED --config message.timestamp.type=LogAppendTime  --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEE_LOCATION --config message.timestamp.type=LogAppendTime  --partitions 1 --replication-factor 1
+      ./bin/kafka-topics.sh --bootstrap-server {{inventory_hostname}}:9092 --create --topic EMPLOYEE_LOCATION_AGGREGATED --config message.timestamp.type=LogAppendTime  --partitions 1 --replication-factor 1

@@ -1,5 +1,6 @@
 
 export SPARK_MASTER_HOST=virtualserver2
+export SPARK_WORKER_HOST=virtualserver2
 export SPARK_MASTER_PORT=7077
 export SPARK_WORKER_MEMORY=8g
 export SPARK_WORKER_INSTANCES=1

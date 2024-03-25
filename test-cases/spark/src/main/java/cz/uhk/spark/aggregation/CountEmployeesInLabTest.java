@@ -87,7 +87,7 @@ public class CountEmployeesInLabTest {
             .option("kafka.bootstrap.servers", config.getString(BROKERS))
             .option("topic", OUTPUT_TOPIC)
             .outputMode("update")
-            .trigger(Trigger.ProcessingTime("0 seconds"))
+            .trigger(Trigger.ProcessingTime("1 seconds"))
             .start();
 
     // Await termination of the query
