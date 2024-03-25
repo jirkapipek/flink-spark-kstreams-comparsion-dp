@@ -1,2 +1,3 @@
 iac/vagrant/.vagrant
 kafka-gui/akhq.jar
+utils/python-exporter/venv

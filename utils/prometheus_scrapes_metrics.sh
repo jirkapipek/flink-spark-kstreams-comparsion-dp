@@ -1,0 +1,3 @@
+curl -G -fsS --data-urlencode 'query=avg((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes) * 100' --data-urlencode 'start=1711324800' --data-urlencode 'end=1711325098' --data-urlencode 'step=1s' 'http://virtualserver1:9090/api/v1/query_range'
+
+curl -G -fsS --data-urlencode 'query=(sum by (instance) (irate(node_cpu_seconds_total{mode!="idle"}[1m])) / on(instance) group_left sum by (instance) (irate(node_cpu_seconds_total[1m]))) * 100' --data-urlencode 'start=1711324800' --data-urlencode 'end=1711325098' --data-urlencode 'step=30s' 'http://virtualserver1:9090/api/v1/query_range'
