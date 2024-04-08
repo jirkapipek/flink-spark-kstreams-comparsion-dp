@@ -37,17 +37,19 @@ Pro spuštění testovacího prostředí tohoto projektu je potřeba mít nainst
 Po úspěšné instalaci všech prerekvizit je možné pokračovat k nastavení a spuštění testovacího prostředí podle návodu k tomuto projektu.
 
 ## Naklonování GIT
-    ```
-    sudo git clone https://github.com/jirkapipek/flink-spark-kstreams-comparsion-dp.git
-    cd flink-spark-kstreams-comparsion-dp
-    ```
+
+```
+sudo git clone https://github.com/jirkapipek/flink-spark-kstreams-comparsion-dp.git
+cd flink-spark-kstreams-comparsion-dp
+```
+
 ## Spuštění testovacího prostředí pomocí `start-stack.sh`
 
-    ```
-    cd iac
-    ./start-stack.sh
-    cd ..
-    ```
+```
+cd iac
+./start-stack.sh
+cd ..
+```
 
 Skript `start-stack.sh` je klíčovým nástrojem pro automatizaci nastavení a spuštění celého testovacího prostředí. Spuštěním tohoto skriptu se postupně provedou následující kroky:
 
@@ -142,7 +144,7 @@ mvn clean package
 
 ### Přenos `.jar` souborů na server
 
-S použitím `scp` příkazu byly `.jar` soubory přeneseny na příslušné servery.
+S použitím `scp` příkazu lze `.jar` soubory přenést na příslušné servery.
 
 ```
 sudo scp test-cases/flink/target/flink-tests-1.0-SNAPSHOT.jar vagrant@virtualserver2:/opt/flink/
