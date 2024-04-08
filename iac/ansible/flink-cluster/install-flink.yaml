@@ -1,18 +1,18 @@
 - hosts: flink_cluster
   tasks:
-    - name: Download Apache Flink # Stažení Apache Flink
+    - name: Download Apache Flink # Download Apache Flink
       get_url:
         url: "{{ flink_url }}"
         dest: "/tmp/flink-{{ flink_version }}-bin-scala_2.12.tgz"
         timeout: 100
       
-    - name: Unpack Apache Flink # Rozbalení Apache Flink
+    - name: Unpack Apache Flink # Unzip Apache Flink
       unarchive:
         src: "/tmp/flink-{{ flink_version }}-bin-scala_2.12.tgz"
         dest: "/opt"
         remote_src: yes
 
-    - name: Copy custom flink-conf.yaml # Kopírování vlastního flink-conf.yaml
+    - name: Copy custom flink-conf.yaml # Copy own flink-conf.yaml
       copy:
         src: "flink-conf.yaml"
         dest: "/opt/flink-{{ flink_version }}/conf/flink-conf.yaml"
@@ -21,18 +21,18 @@
         mode: '0644'
       become: yes
     - name: Start the Job Manager
-      # Spuštění Job Managera
+      # Run Job Manager
       shell: "/opt/flink-{{ flink_version }}/bin/jobmanager.sh start"
       async: 10
       poll: 0
     - name: Start the Task Manager
-      # Spuštění Job Managera
+      # Run Job Manager
       shell: "/opt/flink-{{ flink_version }}/bin/taskmanager.sh start -D taskmanager.memory.process.size={{flink_task_memory}}"
       async: 10
       poll: 0
 
     - name: Verify Flink is running
-      # Ověření, že Flink je spuštěn
+      # Verify Flink is running
       uri:
         url: "http://localhost:8081"
         method: GET

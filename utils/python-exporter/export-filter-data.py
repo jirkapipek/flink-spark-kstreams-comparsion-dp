@@ -4,7 +4,7 @@ import json
 
 # Kafka consumer setup
 conf = {
-    'bootstrap.servers': 'localhost:9095',
+    'bootstrap.servers': 'virualserver1:9092',
     'group.id': 'my_consumer_group',
     'auto.offset.reset': 'earliest'
 }

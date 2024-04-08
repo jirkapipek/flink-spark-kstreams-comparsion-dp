@@ -1,17 +1,17 @@
 - hosts: flink_cluster
   tasks:
     - name: Stop Task managers
-      # Spuštění Job Managera
+      # Run Job Manager
       shell: "/opt/flink-{{ flink_version }}/bin/taskmanager.sh stop-all"
       async: 10
       poll: 0
     - name: Stop job managers
-      # Spuštění Job Managera
+      # Stop Job Manager
       shell: "/opt/flink-{{ flink_version }}/bin/jobmanager.sh stop-all"
       async: 10
       poll: 0     
     - name: Stop cluster
-      # Spuštění Job Managera
+      # Stop cluster
       shell: "/opt/flink-{{ flink_version }}/bin/stop-cluster.sh"
       async: 10
       poll: 0          
