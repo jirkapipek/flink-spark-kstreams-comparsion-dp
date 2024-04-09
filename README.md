@@ -177,3 +177,55 @@ ssh vagrant@virtualserver2
 java -cp kstreams-app.jar cz.uhk.kstreams.filter.FilterEmployeesTest /opt/kstreams/kstreams-tests-1.0-SNAPSHOT.jar
 ```
 
+## Spuštění HTTP požadavků na Prometheus pro získání HW metrik
+
+1. **Příprava příkazů**
+Před spuštěním je potřeba upravit časové razítky (`start`, `end`) tak, aby odpovídaly časovému období, ve kterém byl test spouštěn. Toto je důležité pro zajištění, že získáte relevantní data pro konkrétní testovací scénář.
+
+2. **Příklad 1: Získání průměrného využití paměti**
+```
+curl -G -fsS \
+--data-urlencode 'query=avg((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes) * 100' \
+--data-urlencode 'start=<timestamp_start>' \
+--data-urlencode 'end=<timestamp_end>' \
+--data-urlencode 'step=1s' 'http://<your_prometheus_server>:9090/api/v1/query_range' > memory_usage.json
+```
+3. **Příklad 2: Získání využití CPU podle instancí**
+```
+curl -G -fsS \
+--data-urlencode 'query=(sum by (instance) (irate(node_cpu_seconds_total{mode!="idle"}[5s])) / on(instance) group_left sum by (instance) (irate(node_cpu_seconds_total[5s]))) * 100' \
+--data-urlencode 'start=<timestamp_start>' \
+--data-urlencode 'end=<timestamp_end>' \
+--data-urlencode 'step=5s' 'http://<your_prometheus_server>:9090/api/v1/query_range' > cpu_usage.json
+```
+
+## Spuštění Python skriptů pro extrakci metrik
+
+Před spuštěním Python skriptů je nutné nainstalovat potřebné závislosti a případně nastavit virtuální prostředí. Dále je také třeba vždy uvést, jaké témata se mají měřit, případně jaké soubory se mají načítat.
+
+1. **Prerekvizity**
+- Python 3.10
+
+2. **Nastavení virtuálního prostředí (nepovinné, ale doporučené)**
+
+Pro izolaci závislostí od ostatních Python projektů je vhodné vytvořit virtuální prostředí. Otevřete terminál a spusťte následující příkazy ve složce vašeho projektu:
+
+```
+python -m venv venv
+source venv/bin/activate
+```
+2. **Instalace závislostí**
+
+```pip install -r requirements.txt```
+
+3. **Spuštění Python skriptů**
+```
+#Extrakce metrik pro filtrované data (měření latence)
+python export-filter-data.py
+
+#Extrakce metrik pro transformace a obohacení dat (měření latence)
+python export-message-timestamp.py
+
+#Extrakce HW metrik
+python export-hw.metrics.py
+```
