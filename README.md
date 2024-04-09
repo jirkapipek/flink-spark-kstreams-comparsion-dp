@@ -204,7 +204,7 @@ curl -G -fsS \
 Před spuštěním Python skriptů je nutné nainstalovat potřebné závislosti a případně nastavit virtuální prostředí. Dále je také třeba vždy uvést, jaké témata se mají měřit, případně jaké soubory se mají načítat.
 
 1. **Prerekvizity**
-- Python 3.10
+    - Python 3.10
 
 2. **Nastavení virtuálního prostředí (nepovinné, ale doporučené)**
 
